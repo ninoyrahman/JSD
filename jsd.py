@@ -4,10 +4,14 @@ import calendar
 
 class jsd():
 
-    def __init__(self, name):
+    def __init__(self, source):
         
-        self.name = name
-        self.dataframe = pd.read_excel(self.name)
+        if isinstance(source, str):
+            self.name = source
+            self.dataframe = pd.read_excel(self.name)
+        else:
+            self.dataframe = pd.DataFrame(source)
+        
         self.dataframe.fillna('', inplace=True)
 
     def is_hybrid(self):

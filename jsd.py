@@ -78,14 +78,18 @@ class jsd():
             # Wrap‑around: e.g., start = 11 (Nov), end = 2 (Feb)
             return month >= start or month <= end
         
-    def is_cultivation_time(self, month_str):
+    def is_cultivation_time(self, month_str, bool_list=None):
         sl = self.dataframe['Sowing and transplant starting time'].tolist()
         el = self.dataframe['Sowing and transplant ending time'].tolist()
+        if bool_list != None:
+            return [self.is_month_between(month_str, s, e) for s, e in zip(sl, el)]
         return self.dataframe[[self.is_month_between(month_str, s, e) for s, e in zip(sl, el)]]
     
-    def is_best_cultivation_time(self, month_str):
+    def is_best_cultivation_time(self, month_str, bool_list=None):
         sl = self.dataframe['Best sowing and transplant starting time'].tolist()
         el = self.dataframe['Best sowing and transplant ending time'].tolist()
+        if bool_list != None:
+            return [self.is_month_between(month_str, s, e) for s, e in zip(sl, el)]
         return self.dataframe[[self.is_month_between(month_str, s, e) for s, e in zip(sl, el)]]
     
     def is_allyear(self, best=None):
@@ -99,3 +103,12 @@ class jsd():
         for month_str in calendar.month_name[1:]:
             blist &= np.array([self.is_month_between(month_str, s, e) for s, e in zip(sl, el)])
         return self.dataframe[blist]
+    
+    def make_month_list(self, filename):
+        df = pd.DataFrame(columns=['Variety']+calendar.month_name[1:]+[month+' (best)' for month in calendar.month_name[1:]])
+        df['Variety'] = self.dataframe['Variety']
+        for month in calendar.month_name[1:]:
+            df[month] = self.is_cultivation_time(month, bool_list=True)
+            df[month+' (best)'] = self.is_best_cultivation_time(month, bool_list=True)
+
+        df.to_excel(filename)

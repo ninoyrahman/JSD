@@ -12,7 +12,11 @@ class jsd():
         else:
             self.dataframe = pd.DataFrame(source)
         
+        self.month_table = None
         self.dataframe.fillna('', inplace=True)
+
+    def set_month_table(self, month_table):
+        self.month_table = pd.read_excel(month_table)
 
     def is_hybrid(self):
         return self.dataframe[self.dataframe['Hybrid or OP'].str.contains("hybrid")].sort_index()
@@ -35,10 +39,12 @@ class jsd():
     def is_transport_storage_good(self):
         return self.dataframe[self.dataframe['Transport and storage property'].str.contains('good')]
     
-    def is_maturity_within(self, days):
+    def is_maturity_within(self, days, bool_list=True):
         lower_bounds = self.dataframe['Maturity (days)'].apply(
             lambda x: x if isinstance(x, int) else int(x.split('-')[0])
         )
+        if bool_list != None:
+            return (lower_bounds <= days).tolist()
         return self.dataframe[(lower_bounds <= days).tolist()]
     
     def is_weight(self, fweight):
@@ -77,6 +83,15 @@ class jsd():
         else:
             # Wrap‑around: e.g., start = 11 (Nov), end = 2 (Feb)
             return month >= start or month <= end
+        
+    def is_month_inlist(self, month_str, best=None, bool_list=None):
+        if best != None:
+            if bool_list != None:
+                return self.month_table[month_str+' (best)'].tolist()
+            return self.dataframe[self.month_table[month_str+' (best)'].tolist()]
+        if bool_list != None:
+            return self.month_table[month_str].tolist()
+        return self.dataframe[self.month_table[month_str].tolist()]
         
     def is_cultivation_time(self, month_str, bool_list=None):
         sl = self.dataframe['Sowing and transplant starting time'].tolist()

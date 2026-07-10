@@ -8,9 +8,34 @@ import pandas as pd
 from jsd import jsd
 
 class viewer():
+    """
+    A Tkinter GUI application for browsing and filtering crop variety data.
 
+    This class builds a window with dropdown menus for various filters (crop,
+    maturity, type, brand, weather tolerance, month) and a Treeview widget to
+    display the filtered data from an Excel/CSV file. It relies on the `jsd`
+    class to handle data loading and querying.
+
+    Attributes:
+        db (jsd): The underlying data manager instance.
+        crop_name (str): Current filter value for crop.
+        maturity_day (str): Current filter value for maturity days.
+        crop_type (str): Current filter value for type (Hybrid/OP).
+        brand_name (str): Current filter value for brand.
+        weather_tolerance (str): Current filter value for weather tolerance.
+        month (str): Current filter value for cultivation month.
+        root (tk.Tk): The main Tkinter window.
+        tv1 (ttk.Treeview): The treeview widget displaying the data.
+        label_file (ttk.Label): Label showing the selected file path.
+        current_var_1..6 (tk.StringVar): Variables linked to each combobox.
+    """
     def __init__(self, source=None):
+        """
+        Initialize the GUI and set up all widgets.
 
+        Args:
+            source (optional): Not used; kept for compatibility.
+        """
         # initialize jsd
         self.db = jsd()
         self.crop_name = 'All'
@@ -124,7 +149,11 @@ class viewer():
 
 
     def File_dialog(self):
-        """This Function will open the file explorer and assign the chosen file path to label_file"""
+        """
+        Open a file dialog to select an Excel or CSV file.
+
+        Updates the label with the chosen file path and then loads the data.
+        """
         filename = filedialog.askopenfilename(initialdir="/",
                                             title="Select A File",
                                             filetype=(("xlsx files", "*.xlsx"),("All Files", "*.*")))
@@ -133,6 +162,15 @@ class viewer():
         return None
 
     def Show_data(self, df):
+        """
+        Display a pandas DataFrame in the treeview widget.
+
+        The method clears any existing data, sets up the columns, and inserts
+        each row with alternating row colors for readability.
+
+        Args:
+            df (pd.DataFrame): The data to display.
+        """
         self.clear_data()
         self.tv1["column"] = list(df.columns)
         self.tv1["show"] = "headings"
@@ -151,7 +189,12 @@ class viewer():
         return None
 
     def Load_excel_data(self):
-        """If the file selected is valid this will load the file into the Treeview"""
+        """
+        Load the selected file into the jsd data manager.
+
+        If the file is valid (Excel or CSV), it sets the DataFrame in `self.db`
+        and displays it. Shows an error message on failure.
+        """
         file_path = self.label_file["text"]
         try:
             excel_filename = r"{}".format(file_path)
@@ -173,6 +216,9 @@ class viewer():
         return None
 
     def Reset(self):
+        """
+        Reset all filter comboboxes to 'All' and refresh the display.
+        """
         self.current_var_1.set('All')
         self.current_var_2.set('All')
         self.current_var_3.set('All')
@@ -182,6 +228,13 @@ class viewer():
         self.Refresh()
 
     def Refresh(self):
+        """
+        Apply the current filter selections and update the treeview.
+
+        Retrieves the values from the comboboxes, calls `generate_list` on the
+        jsd object to get a boolean mask, filters the DataFrame, and displays
+        the result. Shows an error if no file is loaded or if something goes wrong.
+        """
         try:
             self.crop_name = self.current_var_1.get()
             self.maturity_day = self.current_var_2.get()
@@ -199,8 +252,14 @@ class viewer():
         return None
 
     def clear_data(self):
+        """
+        Remove all rows from the treeview.
+        """
         self.tv1.delete(*self.tv1.get_children())
         return None
 
     def run(self):
+        """
+        Start the Tkinter main event loop.
+        """
         self.root.mainloop()

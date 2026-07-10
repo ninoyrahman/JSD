@@ -136,8 +136,14 @@ class viewer():
             self.tv1.heading(column, text=column) # let the column heading = column name
 
         df_rows = df.to_numpy().tolist() # turns the dataframe into a list of lists
+        tags = ['even', 'odd']
+        idx = -1
         for row in df_rows:
-            self.tv1.insert("", "end", values=row) # inserts each list into the treeview. For parameters see https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Treeview.insert
+            idx += 1
+            self.tv1.insert("", "end", values=row, tags=(tags[idx%2],)) # inserts each list into the treeview. For parameters see https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Treeview.insert
+
+        self.tv1.tag_configure('even', foreground='black', background='white')
+        self.tv1.tag_configure('odd', foreground='black', background='gray75')
         return None
 
     def Load_excel_data(self):

@@ -65,7 +65,8 @@ class viewer():
 
         self.root.geometry("1080x720") # set the root dimensions
         self.root.pack_propagate(False) # tells the root to not let the widgets inside it determine its size.
-        self.root.resizable(0, 0) # makes the root window fixed in size.
+        self.root.resizable(True, True)  # makes the root window resizible.
+        # self.root.resizable(0, 0) # makes the root window fixed in size.
 
         # Frame for Dropdown
         dropdown_frame = tk.LabelFrame(self.root, text="Select")
@@ -123,7 +124,7 @@ class viewer():
 
         # Frame for open file dialog
         file_frame = tk.LabelFrame(self.root, text="Open File")
-        file_frame.place(height=60, width=400, rely=0.9, relx=0)
+        file_frame.place(height=60, width=400, rely=0.9, relx=0.01)
 
         # Buttons
         button1 = tk.Button(file_frame, text="Browse A File", command=lambda: self.File_dialog())
@@ -136,6 +137,7 @@ class viewer():
         # Frame for TreeView
         frame1 = tk.LabelFrame(self.root, text="Excel Data")
         frame1.place(height=540, width=1070, rely=0.15, relx=0)
+        frame1.pack(fill=tk.BOTH, expand=True, padx=10, pady=100)
 
         ## Treeview Widget
         self.tv1 = ttk.Treeview(frame1)

@@ -32,7 +32,7 @@ class jsd():
         self.month_table = pd.read_excel(month_table)
 
     def is_hybrid(self, bool_list=True):
-        if bool_list != None:
+        if bool_list:
             return self.dataframe['Hybrid or OP'].str.contains("hybrid").tolist()
         return self.dataframe[self.dataframe['Hybrid or OP'].str.contains("hybrid")].sort_index()
     
@@ -40,27 +40,27 @@ class jsd():
         if not isinstance(name, str):
             raise TypeError("name should be a string")
         
-        if bool_list != None:
+        if bool_list:
             return self.dataframe['Crop'].str.contains(name).tolist()
         return self.dataframe[self.dataframe['Crop'].str.contains(name)]
     
     def is_zillion(self, bool_list=True):
-        if bool_list != None:
+        if bool_list:
             return self.dataframe['Company'].str.contains('Zillion').tolist()
         return self.dataframe[self.dataframe['Company'].str.contains('Zillion')]
     
     def is_heat_tolerant(self, bool_list=True):
-        if bool_list != None:
+        if bool_list:
             return self.dataframe['Weather tolerance'].str.contains('heat').tolist()
         return self.dataframe[self.dataframe['Weather tolerance'].str.contains('heat')]
     
     def is_rain_tolerant(self, bool_list=True):
-        if bool_list != None:
+        if bool_list:
             return self.dataframe['Weather tolerance'].str.contains('rain').tolist()
         return self.dataframe[self.dataframe['Weather tolerance'].str.contains('rain')]
     
     def is_transport_storage_good(self, bool_list=True):
-        if bool_list != None:
+        if bool_list:
             return self.dataframe['Transport and storage property'].str.contains('good').tolist()
         return self.dataframe[self.dataframe['Transport and storage property'].str.contains('good')]
     
@@ -68,7 +68,7 @@ class jsd():
         lower_bounds = self.dataframe['Maturity (days)'].apply(
             lambda x: x if isinstance(x, int) else int(x.split('-')[0])
         )
-        if bool_list != None:
+        if bool_list:
             return (lower_bounds <= days).tolist()
         return self.dataframe[(lower_bounds <= days).tolist()]
     
@@ -109,40 +109,40 @@ class jsd():
             # Wrap‑around: e.g., start = 11 (Nov), end = 2 (Feb)
             return month >= start or month <= end
         
-    def is_month_inlist(self, month_str, best=None, bool_list=None):
-        if best != None:
-            if bool_list != None:
+    def is_month_inlist(self, month_str, best=False, bool_list=True):
+        if best:
+            if bool_list:
                 return self.month_table[month_str+' (best)'].tolist()
             return self.dataframe[self.month_table[month_str+' (best)'].tolist()]
-        if bool_list != None:
+        if bool_list:
             return self.month_table[month_str].tolist()
         return self.dataframe[self.month_table[month_str].tolist()]
         
-    def is_cultivation_time(self, month_str, bool_list=None):
+    def is_cultivation_time(self, month_str, bool_list=True):
         sl = self.dataframe['Sowing and transplant starting time'].tolist()
         el = self.dataframe['Sowing and transplant ending time'].tolist()
-        if bool_list != None:
+        if bool_list:
             return [self.is_month_between(month_str, s, e) for s, e in zip(sl, el)]
         return self.dataframe[[self.is_month_between(month_str, s, e) for s, e in zip(sl, el)]]
     
-    def is_best_cultivation_time(self, month_str, bool_list=None):
+    def is_best_cultivation_time(self, month_str, bool_list=True):
         sl = self.dataframe['Best sowing and transplant starting time'].tolist()
         el = self.dataframe['Best sowing and transplant ending time'].tolist()
-        if bool_list != None:
+        if bool_list:
             return [self.is_month_between(month_str, s, e) for s, e in zip(sl, el)]
         return self.dataframe[[self.is_month_between(month_str, s, e) for s, e in zip(sl, el)]]
     
-    def is_allyear(self, best=None, bool_list=None):
-        if best != None:
+    def is_allyear(self, best=False, bool_list=True):
+        if best:
             sl = self.dataframe['Best sowing and transplant starting time'].tolist()
-            el = self.dataframe['Best sowing and transplant ending time'].tolist()    
+            el = self.dataframe['Best sowing and transplant ending time'].tolist()
         else:
             sl = self.dataframe['Sowing and transplant starting time'].tolist()
             el = self.dataframe['Sowing and transplant ending time'].tolist()
         blist = np.ones(len(sl), dtype=bool)
         for month_str in calendar.month_name[1:]:
             blist &= np.array([self.is_month_between(month_str, s, e) for s, e in zip(sl, el)])
-        if bool_list != None:
+        if bool_list:
             return blist
         return self.dataframe[blist]
     

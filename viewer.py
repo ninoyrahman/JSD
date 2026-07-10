@@ -2,6 +2,7 @@
 
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
+import calendar
 
 import pandas as pd
 from jsd import jsd
@@ -17,7 +18,8 @@ class viewer():
         self.crop_type = 'All'
         self.brand_name = 'All'
         self.weather_tolerance = 'All'
-        self.transport_property = 'All'
+        # self.transport_property = 'All'
+        self.month = 'All'
 
         crop_names = ['All', 'Bitter Gourd', 'Bottle Gourd', 'Broccoli', 'Cabbage', 'Capsicum', 
                     'Carrot', 'Cauliflower', 'Chinese Cabbage', 'Chinese Radish', 'Cucumber', 
@@ -29,7 +31,9 @@ class viewer():
         crop_types = ['All', 'Hybrid', 'OP']
         brand_names = ['All', 'Zillion', 'Chia Tai']
         weather_tolerances = ['All', 'Rain', 'Heat', 'Rain & heat']
-        transport_properties = ['All', 'Good']
+        # transport_properties = ['All', 'Good']
+        months = calendar.month_name[1:]
+        months.insert(0, 'All')
 
         # initalise the tkinter GUI
         self.root = tk.Tk()
@@ -78,10 +82,10 @@ class viewer():
         combobox_5.place(rely=0.25, relx=0.655, width=110)
         combobox_5.set('All')
 
-        label_6 = tk.Label(dropdown_frame, text="Transport")
+        label_6 = tk.Label(dropdown_frame, text="Month")
         label_6.place(rely=0.25, relx=0.765)
         self.current_var_6 = tk.StringVar()
-        combobox_6 = ttk.Combobox(dropdown_frame, values=transport_properties, textvariable=self.current_var_6)
+        combobox_6 = ttk.Combobox(dropdown_frame, values=months, textvariable=self.current_var_6)
         combobox_6.place(rely=0.25, relx=0.82, width=110)
         combobox_6.set('All')
 
@@ -184,9 +188,9 @@ class viewer():
             self.crop_type = self.current_var_3.get()
             self.brand_name = self.current_var_4.get()
             self.weather_tolerance = self.current_var_5.get()
-            self.transport_property = self.current_var_6.get()
+            self.month = self.current_var_6.get()
 
-            variety_list = self.db.generate_list(self.crop_name, self.maturity_day, self.crop_type, self.brand_name, self.weather_tolerance, self.transport_property)
+            variety_list = self.db.generate_list(self.crop_name, self.maturity_day, self.crop_type, self.brand_name, self.weather_tolerance, self.month)
             df = pd.DataFrame(self.db.dataframe[variety_list])
             self.Show_data(df)
         except:

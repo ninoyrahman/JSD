@@ -155,7 +155,7 @@ class jsd():
 
         df.to_excel(filename)
 
-    def generate_list(self, crop_name='All', maturity_day='All', crop_type='All', brand_name='All', weather_tolerance='All', transport_property='All'):
+    def generate_list(self, crop_name='All', maturity_day='All', crop_type='All', brand_name='All', weather_tolerance='All', month='All'):
 
         variety_list = [True] * len(self.dataframe)
 
@@ -195,9 +195,9 @@ class jsd():
                 weather_list = [x and y for x, y in zip(rain_list, heat_list)]
             variety_list = [x and y for x, y in zip(weather_list, variety_list)]
 
-        # transport property
-        if transport_property != 'All':
-            transport_list = self.is_transport_storage_good(bool_list=True)
-            variety_list = [x and y for x, y in zip(transport_list, variety_list)]
+        # cultivation time
+        if month != 'All':
+            month_list = self.is_cultivation_time(month, bool_list=True)
+            variety_list = [x and y for x, y in zip(month_list, variety_list)]
 
         return variety_list

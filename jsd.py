@@ -73,104 +73,23 @@ class jsd():
         """
         self.month_table = pd.read_excel(month_table)
 
-    def is_hybrid(self, bool_list=True):
+    def find(self, column, value, bool_list=True):
         """
-        Check whether varieties are hybrids or open‑pollinated.
+        Search a column for a substring or regular expression pattern.
 
         Args:
-            bool_list (bool): If True, return a list of booleans (True for hybrid).
-                If False, return a filtered DataFrame containing only hybrid varieties.
-                Defaults to True.
-
-        Returns:
-            list of bool or pd.DataFrame: Depending on `bool_list`.
-        """
-        if bool_list:
-            return self.dataframe['Hybrid or OP'].str.contains("hybrid").tolist()
-        return self.dataframe[self.dataframe['Hybrid or OP'].str.contains("hybrid")].sort_index()
-    
-    def is_crop(self, name, bool_list=True):
-        """
-        Filter varieties by crop name (case‑sensitive substring match).
-
-        Args:
-            name (str): The crop name to search for.
-            bool_list (bool): If True, return a list of booleans. If False, return
-                a filtered DataFrame. Defaults to True.
-
-        Returns:
-            list of bool or pd.DataFrame
-
-        Raises:
-            TypeError: If `name` is not a string.
-        """
-        if not isinstance(name, str):
-            raise TypeError("name should be a string")
-        
-        if bool_list:
-            return self.dataframe['Crop'].str.contains(name).tolist()
-        return self.dataframe[self.dataframe['Crop'].str.contains(name)]
-    
-    def is_zillion(self, bool_list=True):
-        """
-        Filter varieties by company name containing 'Zillion'.
-
-        Args:
-            bool_list (bool): If True, return a list of booleans. If False, return
+            column (str): The name of the target column to search within.
+            value (str): The substring or regular expression pattern to match.
+            bool_list (bool, optional): If True, return a list of booleans. If False, return
                 a filtered DataFrame. Defaults to True.
 
         Returns:
             list of bool or pd.DataFrame
         """
         if bool_list:
-            return self.dataframe['Company'].str.contains('Zillion').tolist()
-        return self.dataframe[self.dataframe['Company'].str.contains('Zillion')]
-    
-    def is_heat_tolerant(self, bool_list=True):
-        """
-        Filter varieties with 'heat' mentioned in weather tolerance.
+            return self.dataframe[column].str.contains(value).tolist()
+        return self.dataframe[self.dataframe[column].str.contains(value)].sort_index()
 
-        Args:
-            bool_list (bool): If True, return a list of booleans. If False, return
-                a filtered DataFrame. Defaults to True.
-
-        Returns:
-            list of bool or pd.DataFrame
-        """
-        if bool_list:
-            return self.dataframe['Weather tolerance'].str.contains('heat').tolist()
-        return self.dataframe[self.dataframe['Weather tolerance'].str.contains('heat')]
-    
-    def is_rain_tolerant(self, bool_list=True):
-        """
-        Filter varieties with 'rain' mentioned in weather tolerance.
-
-        Args:
-            bool_list (bool): If True, return a list of booleans. If False, return
-                a filtered DataFrame. Defaults to True.
-
-        Returns:
-            list of bool or pd.DataFrame
-        """
-        if bool_list:
-            return self.dataframe['Weather tolerance'].str.contains('rain').tolist()
-        return self.dataframe[self.dataframe['Weather tolerance'].str.contains('rain')]
-    
-    def is_transport_storage_good(self, bool_list=True):
-        """
-        Filter varieties with 'good' in transport and storage property.
-
-        Args:
-            bool_list (bool): If True, return a list of booleans. If False, return
-                a filtered DataFrame. Defaults to True.
-
-        Returns:
-            list of bool or pd.DataFrame
-        """
-        if bool_list:
-            return self.dataframe['Transport and storage property'].str.contains('good').tolist()
-        return self.dataframe[self.dataframe['Transport and storage property'].str.contains('good')]
-    
     def is_maturity_within(self, days, bool_list=True):
         """
         Filter varieties whose maturity (in days) is at most the given value.
@@ -420,7 +339,7 @@ class jsd():
 
         # crop
         if crop_name != 'All':
-            crop_list = self.is_crop(crop_name, bool_list=True)
+            crop_list = self.find(column='Crop', value=crop_name, bool_list=True)
             variety_list = [x and y for x, y in zip(crop_list, variety_list)]
 
         # maturity
@@ -430,27 +349,23 @@ class jsd():
 
         # hybrid or OP
         if crop_type != 'All':
-            type_list = self.is_hybrid(bool_list=True)
-            if crop_type != 'Hybrid':
-                type_list = [not x for x in type_list]
+            type_list = self.find(column='Hybrid or OP', value=crop_type, bool_list=True)
             variety_list = [x and y for x, y in zip(type_list, variety_list)]
 
         # brand
         if brand_name != 'All':
-            brand_list = self.is_zillion(bool_list=True)
-            if brand_name != 'Zillion':
-                brand_list = [not x for x in brand_list]
+            brand_list = self.find(column='Company', value=brand_name, bool_list=True)
             variety_list = [x and y for x, y in zip(brand_list, variety_list)]
 
         # weather tolerance
         if weather_tolerance != 'All':
             if weather_tolerance == 'Rain':
-                weather_list = self.is_rain_tolerant(bool_list=True)
+                weather_list = self.find(column='Weather tolerance', value='rain', bool_list=True)
             elif weather_tolerance == 'Heat':
-                weather_list = self.is_heat_tolerant(bool_list=True)
+                weather_list = self.find(column='Weather tolerance', value='heat', bool_list=True)
             else:
-                rain_list = self.is_rain_tolerant(bool_list=True)
-                heat_list = self.is_heat_tolerant(bool_list=True)
+                rain_list = self.find(column='Weather tolerance', value='rain', bool_list=True)
+                heat_list = self.find(column='Weather tolerance', value='heat', bool_list=True)
                 weather_list = [x and y for x, y in zip(rain_list, heat_list)]
             variety_list = [x and y for x, y in zip(weather_list, variety_list)]
 

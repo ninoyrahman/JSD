@@ -69,8 +69,7 @@ class viewer():
         # self.root.resizable(0, 0) # makes the root window fixed in size.
 
         # Frame for Dropdown
-        dropdown_frame = tk.LabelFrame(self.root, text="Select")
-        dropdown_frame.place(height=80, width=1070, rely=0.01, relx=0)
+        dropdown_frame = tk.LabelFrame(self.root, text="Select", height=80, width=1070)
 
         # Combobox
         label_1 = tk.Label(dropdown_frame, text="Crop")
@@ -122,22 +121,8 @@ class viewer():
         button_2 = tk.Button(dropdown_frame, text="Reset", command=lambda: self.Reset())
         button_2.place(rely=0.52, relx=0.95, width=50)
 
-        # Frame for open file dialog
-        file_frame = tk.LabelFrame(self.root, text="Open File")
-        file_frame.place(height=60, width=400, rely=0.9, relx=0.01)
-
-        # Buttons
-        button1 = tk.Button(file_frame, text="Browse A File", command=lambda: self.File_dialog())
-        button1.place(rely=0.3, relx=0.40)
-
-        # The file/file path text
-        self.label_file = ttk.Label(file_frame, text="No File Selected")
-        self.label_file.place(rely=0, relx=0)
-
         # Frame for TreeView
-        frame1 = tk.LabelFrame(self.root, text="Excel Data")
-        frame1.place(height=540, width=1070, rely=0.15, relx=0)
-        frame1.pack(fill=tk.BOTH, expand=True, padx=10, pady=100)
+        frame1 = tk.LabelFrame(self.root, text="Excel Data", height=540, width=1070)
 
         ## Treeview Widget
         self.tv1 = ttk.Treeview(frame1)
@@ -148,6 +133,21 @@ class viewer():
         self.tv1.configure(xscrollcommand=treescrollx.set, yscrollcommand=treescrolly.set) # assign the scrollbars to the Treeview Widget
         treescrollx.pack(side="bottom", fill="x") # make the scrollbar fill the x axis of the Treeview widget
         treescrolly.pack(side="right", fill="y") # make the scrollbar fill the y axis of the Treeview widget
+
+        # Frame for open file dialog
+        file_frame = tk.LabelFrame(self.root, text="Open File", height=80, width=400)
+
+        # The file/file path text
+        self.label_file = ttk.Label(file_frame, text="No File Selected")
+        self.label_file.place(rely=0, relx=0)
+
+        # Buttons
+        button1 = tk.Button(file_frame, text="Browse A File", command=lambda: self.File_dialog())
+        button1.place(rely=0.4, relx=0.40)
+
+        dropdown_frame.pack(expand=False, padx=10, pady=10, anchor=tk.NW)
+        frame1.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        file_frame.pack(expand=False, padx=10, pady=10, anchor=tk.SW)
 
 
     def File_dialog(self):

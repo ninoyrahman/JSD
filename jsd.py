@@ -58,7 +58,6 @@ class jsd():
         else:
             self.dataframe = pd.DataFrame(source)
             
-        self.month_table = None
         self.dataframe.fillna('', inplace=True)
 
     def set_month_table(self, month_table):
@@ -371,7 +370,10 @@ class jsd():
 
         # cultivation time
         if month != 'All':
-            month_list = self.is_cultivation_time(month, bool_list=True)
+            if self.month_table is not None:
+                month_list = self.is_month_inlist(month)
+            else:
+                month_list = self.is_cultivation_time(month, bool_list=True)
             variety_list = [x and y for x, y in zip(month_list, variety_list)]
 
         return variety_list

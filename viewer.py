@@ -142,8 +142,11 @@ class viewer():
         self.label_file.place(rely=0, relx=0)
 
         # Buttons
-        button1 = tk.Button(file_frame, text="Browse A File", command=lambda: self.File_dialog())
-        button1.place(rely=0.4, relx=0.40)
+        button1 = tk.Button(file_frame, text="Browse Crop File", command=lambda: self.File_dialog())
+        button1.place(width=150, rely=0.4, relx=0.05)
+
+        button2 = tk.Button(file_frame, text="Browse Crop Calendar File", command=lambda: self.File_dialog_calendar_file())
+        button2.place(width=150, rely=0.4, relx=0.50)
 
         dropdown_frame.pack(expand=False, padx=10, pady=10, anchor=tk.NW)
         frame1.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -161,6 +164,22 @@ class viewer():
                                             filetype=(("xlsx files", "*.xlsx"),("All Files", "*.*")))
         self.label_file["text"] = filename
         self.Load_excel_data()
+        return None
+    
+    def File_dialog_calendar_file(self):
+        """
+        Open a file dialog to select an Excel or CSV file.
+
+        Set the month table with the given file path.
+        """
+        filename = filedialog.askopenfilename(initialdir="/",
+                                            title="Select A File",
+                                            filetype=(("xlsx files", "*.xlsx"),("All Files", "*.*")))
+        try:
+            self.db.set_month_table(filename)
+        except Exception:
+            tk.messagebox.showerror("Information", "Something went wrong")
+            return None
         return None
 
     def Show_data(self, df):

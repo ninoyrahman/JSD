@@ -314,7 +314,7 @@ class jsd():
 
         df.to_excel(filename)
 
-    def generate_list(self, crop_name='All', maturity_day='All', crop_type='All', brand_name='All', weather_tolerance='All', month='All'):
+    def generate_list(self, crop_name='All', maturity_day='All', crop_type='All', brand_name='All', weather_tolerance='All', month='All', best=False):
         """
         Generate a boolean list of varieties that match all specified criteria.
 
@@ -371,9 +371,12 @@ class jsd():
         # cultivation time
         if month != 'All':
             if self.month_table is not None:
-                month_list = self.is_month_inlist(month)
+                month_list = self.is_month_inlist(month, best)
             else:
-                month_list = self.is_cultivation_time(month, bool_list=True)
+                if best:
+                    month_list = self.is_best_cultivation_time(month, bool_list=True)
+                else:   
+                    month_list = self.is_cultivation_time(month, bool_list=True)
             variety_list = [x and y for x, y in zip(month_list, variety_list)]
 
         return variety_list

@@ -45,6 +45,7 @@ class viewer():
         self.weather_tolerance = 'All'
         # self.transport_property = 'All'
         self.month = 'All'
+        self.best = False
 
         crop_names = ['All', 'Bitter Gourd', 'Bottle Gourd', 'Broccoli', 'Cabbage', 'Capsicum', 
                     'Carrot', 'Cauliflower', 'Chinese Cabbage', 'Chinese Radish', 'Cucumber', 
@@ -113,6 +114,10 @@ class viewer():
         combobox_6 = ttk.Combobox(dropdown_frame, values=months, textvariable=self.current_var_6)
         combobox_6.place(rely=0.25, relx=0.82, width=110)
         combobox_6.set('All')
+
+        self.current_var_7 = tk.IntVar()
+        checkbutton = tk.Checkbutton(dropdown_frame, text="Best", variable=self.current_var_7)
+        checkbutton.place(rely=0.59, relx=0.82, width=110)
 
         # Buttons
         button_1 = tk.Button(dropdown_frame, text="Refresh", command=lambda: self.Refresh())
@@ -246,6 +251,7 @@ class viewer():
         self.current_var_4.set('All')
         self.current_var_5.set('All')
         self.current_var_6.set('All')
+        self.current_var_7.set(0)
         self.Refresh()
 
     def Refresh(self):
@@ -263,8 +269,9 @@ class viewer():
             self.brand_name = self.current_var_4.get()
             self.weather_tolerance = self.current_var_5.get()
             self.month = self.current_var_6.get()
+            self.best = bool(self.current_var_7.get())
 
-            variety_list = self.db.generate_list(self.crop_name, self.maturity_day, self.crop_type, self.brand_name, self.weather_tolerance, self.month)
+            variety_list = self.db.generate_list(self.crop_name, self.maturity_day, self.crop_type, self.brand_name, self.weather_tolerance, self.month, self.best)
             df = pd.DataFrame(self.db.dataframe[variety_list])
             self.Show_data(df)
         except:

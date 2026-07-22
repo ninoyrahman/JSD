@@ -36,7 +36,7 @@ ArchitecturesInstallIn64BitMode=x64compatible
 ;SetupArchitecture=x64
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
-LicenseFile=C:\Users\ninoy\Documents\workspace\jsd\License.txt
+LicenseFile=C:\Users\ninoy\Documents\workspace\jsd\LICENSE
 InfoAfterFile=C:\Users\ninoy\Documents\workspace\jsd\Readme.txt
 ; Remove the following line to run in administrative install mode (install for all users).
 PrivilegesRequired=lowest

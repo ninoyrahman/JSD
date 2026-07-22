@@ -140,7 +140,7 @@ class viewer():
         treescrolly.pack(side="right", fill="y") # make the scrollbar fill the y axis of the Treeview widget
 
         # Frame for open file dialog
-        file_frame = tk.LabelFrame(self.root, text="Open File", height=80, width=400)
+        file_frame = tk.LabelFrame(self.root, text="Open File", height=80, width=600)
 
         # The file/file path text
         self.label_file = ttk.Label(file_frame, text="No File Selected")
@@ -151,7 +151,10 @@ class viewer():
         button1.place(width=150, rely=0.4, relx=0.05)
 
         button2 = tk.Button(file_frame, text="Browse Crop Calendar File", command=lambda: self.File_dialog_calendar_file())
-        button2.place(width=150, rely=0.4, relx=0.50)
+        button2.place(width=150, rely=0.4, relx=0.35)
+
+        button3 = tk.Button(file_frame, text="Save File", command=lambda: self.File_dialog_save_file())
+        button3.place(width=150, rely=0.4, relx=0.65)
 
         dropdown_frame.pack(expand=False, padx=10, pady=10, anchor=tk.NW)
         frame1.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -182,6 +185,32 @@ class viewer():
                                             filetype=(("xlsx files", "*.xlsx"),("All Files", "*.*")))
         try:
             self.db.set_month_table(filename)
+        except Exception:
+            tk.messagebox.showerror("Information", "Something went wrong")
+            return None
+        return None
+
+    def File_dialog_save_file(self):
+        """
+        Open a file dialog to select an Excel or CSV file.
+
+        Set the month table with the given file path.
+        """
+        filename = filedialog.asksaveasfilename(initialdir="/",
+                                            title="Select A File",
+                                            filetype=(("xlsx files", "*.xlsx"),("All Files", "*.*")))
+        try:
+            self.crop_name = self.current_var_1.get()
+            self.maturity_day = self.current_var_2.get()
+            self.crop_type = self.current_var_3.get()
+            self.brand_name = self.current_var_4.get()
+            self.weather_tolerance = self.current_var_5.get()
+            self.month = self.current_var_6.get()
+            self.best = bool(self.current_var_7.get())
+            
+            variety_list = self.db.generate_list(self.crop_name, self.maturity_day, self.crop_type, self.brand_name, self.weather_tolerance, self.month, self.best)
+            df = pd.DataFrame(self.db.dataframe[variety_list])
+            df.to_excel(filename)
         except Exception:
             tk.messagebox.showerror("Information", "Something went wrong")
             return None

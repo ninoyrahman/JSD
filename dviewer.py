@@ -1,0 +1,258 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox, ttk
+
+import pandas as pd
+from jsdd import jsdd
+
+class dviewer():
+    def __init__(self, source=None):
+        """
+        Initialize the GUI and set up all widgets.
+
+        Args:
+            source (optional): Not used; kept for compatibility.
+        """
+        # initialize jsdd
+        self.db = jsdd()
+        self.crop_name = 'All'
+        self.cause = 'All'
+        self.part_affected = 'All'
+        self.status = 'All'
+        self.rating = 'All'
+
+        crop_names = ['All', 'Bitter Gourd', 'Bottle Gourd', 'Broccoli', 'Cabbage', 'Capsicum', 
+                    'Carrot', 'Cauliflower', 'Chinese Cabbage', 'Chinese Radish', 'Cucumber', 'Cucurbits'
+                    'Eggplant', 'Hot Pepper', 'Kohlrabi', 'Lettuce', 'Loofah', 'Marigold', 
+                    'Melon', 'Okra', 'Pakchoi', 'Papaya', 'Pumpkin', 'Radish', 'Red Cabbage', 
+                    'Ridge Gourd', 'Snake Gourd', 'Sponge Gourd', 'Sweet Corn', 'Tomato', 
+                    'Watermelon', 'Wax Gourd', 'Yard Long Bean']
+        causes = ['All', 'Fungi', 'Bacteria', 'Virus', 'Nematode', 'Pest']
+        parts_affected = ['All', 'base', 'branch', 'bud', 'collar', 'curd', 
+                          'flower', 'foliage', 'fruit', 'leaf', 'plant', 
+                          'root', 'seed', 'seedling', 'shoot', 'stem', 'vine']
+        statuses = ['All', 'high', 'medium', 'low']
+        ratings = ['All', '3-star', '2-star', '1-star']
+
+        # initalise the tkinter GUI
+        self.root = tk.Tk()
+
+        self.root.geometry("1080x720") # set the root dimensions
+        self.root.pack_propagate(False) # tells the root to not let the widgets inside it determine its size.
+        self.root.resizable(True, True)  # makes the root window resizible.
+        # self.root.resizable(0, 0) # makes the root window fixed in size.
+
+        # Frame for Dropdown
+        dropdown_frame = tk.LabelFrame(self.root, text="Select", height=80, width=1070)
+
+        # Combobox
+        label_1 = tk.Label(dropdown_frame, text="Crop")
+        label_1.place(rely=0.25, relx=0.005)
+        self.current_var_1 = tk.StringVar()
+        combobox_1 = ttk.Combobox(dropdown_frame, values=crop_names, textvariable=self.current_var_1)
+        combobox_1.place(rely=0.25, relx=0.04, width=120)
+        combobox_1.set('All')
+
+        label_2 = tk.Label(dropdown_frame, text="Cause")
+        label_2.place(rely=0.25, relx=0.16)
+        self.current_var_2 = tk.StringVar()
+        combobox_2 = ttk.Combobox(dropdown_frame, values=causes, textvariable=self.current_var_2)
+        combobox_2.place(rely=0.25, relx=0.2, width=110)
+        combobox_2.set('All')
+
+        label_3 = tk.Label(dropdown_frame, text="Part affected")
+        label_3.place(rely=0.25, relx=0.31)
+        self.current_var_3 = tk.StringVar()
+        combobox_3 = ttk.Combobox(dropdown_frame, values=parts_affected, textvariable=self.current_var_3)
+        combobox_3.place(rely=0.25, relx=0.385, width=110)
+        combobox_3.set('All')
+
+        label_4 = tk.Label(dropdown_frame, text="Status")
+        label_4.place(rely=0.25, relx=0.50)
+        self.current_var_4 = tk.StringVar()
+        combobox_4 = ttk.Combobox(dropdown_frame, values=statuses, textvariable=self.current_var_4)
+        combobox_4.place(rely=0.25, relx=0.54, width=110)
+        combobox_4.set('All')
+
+        label_5 = tk.Label(dropdown_frame, text="Rating")
+        label_5.place(rely=0.25, relx=0.65)
+        self.current_var_5 = tk.StringVar()
+        combobox_5 = ttk.Combobox(dropdown_frame, values=ratings, textvariable=self.current_var_5)
+        combobox_5.place(rely=0.25, relx=0.69, width=110)
+        combobox_5.set('All')
+
+        # Buttons
+        button_1 = tk.Button(dropdown_frame, text="Refresh", command=lambda: self.Refresh())
+        button_1.place(rely=0.00, relx=0.81, width=50)
+
+        button_2 = tk.Button(dropdown_frame, text="Reset", command=lambda: self.Reset())
+        button_2.place(rely=0.52, relx=0.81, width=50)
+
+        # Frame for TreeView
+        frame1 = tk.LabelFrame(self.root, text="Excel Data", height=540, width=1070)
+
+        ## Treeview Widget
+        self.tv1 = ttk.Treeview(frame1)
+        self.tv1.place(relheight=1, relwidth=1) # set the height and width of the widget to 100% of its container (frame1).
+
+        treescrolly = tk.Scrollbar(frame1, orient="vertical", command=self.tv1.yview) # command means update the yaxis view of the widget
+        treescrollx = tk.Scrollbar(frame1, orient="horizontal", command=self.tv1.xview) # command means update the xaxis view of the widget
+        self.tv1.configure(xscrollcommand=treescrollx.set, yscrollcommand=treescrolly.set) # assign the scrollbars to the Treeview Widget
+        treescrollx.pack(side="bottom", fill="x") # make the scrollbar fill the x axis of the Treeview widget
+        treescrolly.pack(side="right", fill="y") # make the scrollbar fill the y axis of the Treeview widget
+
+        # Frame for open file dialog
+        file_frame = tk.LabelFrame(self.root, text="Open File", height=80, width=360)
+
+        # The file/file path text
+        self.label_file = ttk.Label(file_frame, text="No File Selected")
+        self.label_file.place(rely=0, relx=0)
+
+        # Buttons
+        button1 = tk.Button(file_frame, text="Browse Crop File", command=lambda: self.File_dialog())
+        button1.place(width=150, rely=0.4, relx=0.05)
+
+        button3 = tk.Button(file_frame, text="Save File", command=lambda: self.File_dialog_save_file())
+        button3.place(width=150, rely=0.4, relx=0.5)
+
+        dropdown_frame.pack(expand=False, padx=10, pady=10, anchor=tk.NW)
+        frame1.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        file_frame.pack(expand=False, padx=10, pady=10, anchor=tk.SW)
+
+
+    def File_dialog(self):
+        """
+        Open a file dialog to select an Excel or CSV file.
+
+        Updates the label with the chosen file path and then loads the data.
+        """
+        filename = filedialog.askopenfilename(initialdir="/",
+                                            title="Select A File",
+                                            filetype=(("xlsx files", "*.xlsx"),("All Files", "*.*")))
+        self.label_file["text"] = filename
+        self.Load_excel_data()
+        return None
+
+    def File_dialog_save_file(self):
+        """
+        Open a file dialog to select an Excel or CSV file.
+
+        Set the month table with the given file path.
+        """
+        filename = filedialog.asksaveasfilename(initialdir="/",
+                                            title="Select A File",
+                                            filetype=(("xlsx files", "*.xlsx"),("All Files", "*.*")))
+        try:
+            self.crop_name = self.current_var_1.get()
+            self.cause = self.current_var_2.get()
+            self.part_affected = self.current_var_3.get()
+            self.status = self.current_var_4.get()
+            self.rating = self.current_var_5.get()
+            
+            variety_list = self.db.generate_list(self.crop_name, self.cause, self.part_affected, self.status, self.rating)
+            df = pd.DataFrame(self.db.dataframe[variety_list])
+            df.to_excel(filename)
+        except Exception:
+            tk.messagebox.showerror("Information", "Something went wrong")
+            return None
+        return None
+
+    def Show_data(self, df):
+        """
+        Display a pandas DataFrame in the treeview widget.
+
+        The method clears any existing data, sets up the columns, and inserts
+        each row with alternating row colors for readability.
+
+        Args:
+            df (pd.DataFrame): The data to display.
+        """
+        self.clear_data()
+        self.tv1["column"] = list(df.columns)
+        self.tv1["show"] = "headings"
+        for column in self.tv1["columns"]:
+            self.tv1.heading(column, text=column) # let the column heading = column name
+
+        df_rows = df.to_numpy().tolist() # turns the dataframe into a list of lists
+        tags = ['even', 'odd']
+        idx = -1
+        for row in df_rows:
+            idx += 1
+            self.tv1.insert("", "end", values=row, tags=(tags[idx%2],)) # inserts each list into the treeview. For parameters see https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Treeview.insert
+
+        self.tv1.tag_configure('even', foreground='black', background='white')
+        self.tv1.tag_configure('odd', foreground='black', background='gray75')
+        return None
+
+    def Load_excel_data(self):
+        """
+        Load the selected file into the jsd data manager.
+
+        If the file is valid (Excel or CSV), it sets the DataFrame in `self.db`
+        and displays it. Shows an error message on failure.
+        """
+        file_path = self.label_file["text"]
+        try:
+            excel_filename = r"{}".format(file_path)
+            if excel_filename[-4:] == ".csv":
+                self.db.set_dataframe(excel_filename)
+                df = self.db.dataframe
+            else:
+                self.db.set_dataframe(excel_filename)
+                df = self.db.dataframe
+
+        except ValueError:
+            tk.messagebox.showerror("Information", "The file you have chosen is invalid")
+            return None
+        except FileNotFoundError:
+            tk.messagebox.showerror("Information", f"No such file as {file_path}")
+            return None
+
+        self.Show_data(df)
+        return None
+
+    def Reset(self):
+        """
+        Reset all filter comboboxes to 'All' and refresh the display.
+        """
+        self.current_var_1.set('All')
+        self.current_var_2.set('All')
+        self.current_var_3.set('All')
+        self.current_var_4.set('All')
+        self.current_var_5.set('All')
+        self.Refresh()
+
+    def Refresh(self):
+        """
+        Apply the current filter selections and update the treeview.
+
+        Retrieves the values from the comboboxes, calls `generate_list` on the
+        jsd object to get a boolean mask, filters the DataFrame, and displays
+        the result. Shows an error if no file is loaded or if something goes wrong.
+        """
+        try:
+            self.crop_name = self.current_var_1.get()
+            self.cause = self.current_var_2.get()
+            self.part_affected = self.current_var_3.get()
+            self.status = self.current_var_4.get()
+            self.rating = self.current_var_5.get()
+
+            variety_list = self.db.generate_list(self.crop_name, self.cause, self.part_affected, self.status, self.rating)
+            df = pd.DataFrame(self.db.dataframe[variety_list])
+            self.Show_data(df)
+        except:
+            tk.messagebox.showerror("Information", "File not selected")
+            return None
+        return None
+
+    def clear_data(self):
+        """
+        Remove all rows from the treeview.
+        """
+        self.tv1.delete(*self.tv1.get_children())
+        return None
+
+    def run(self):
+        """
+        Start the Tkinter main event loop.
+        """
+        self.root.mainloop()

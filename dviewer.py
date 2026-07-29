@@ -1,3 +1,12 @@
+"""
+dviewer.py - A GUI application for viewing and filtering plant disease data.
+
+This module provides a Tkinter-based interface to load Excel/CSV files containing
+disease records and filter them by various criteria (crop, cause, affected part,
+status, rating). It uses the `jsdd` module for data management and `pandas` for
+data manipulation.
+"""
+
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
@@ -5,6 +14,26 @@ import pandas as pd
 from jsdd import jsdd
 
 class dviewer():
+    """
+    A Tkinter GUI application for browsing and filtering disease data.
+
+    The class manages the main window, dropdown filters, a treeview for data
+    display, and file operations (load and save). It interacts with a `jsdd`
+    data manager to apply filters and retrieve filtered datasets.
+
+    Attributes:
+        db (jsdd): The data manager instance that holds the loaded DataFrame.
+        crop_name (str): Current selected crop filter.
+        cause (str): Current selected cause filter.
+        part_affected (str): Current selected part affected filter.
+        status (str): Current selected status filter.
+        rating (str): Current selected rating filter.
+        root (tk.Tk): The main Tkinter root window.
+        tv1 (ttk.Treeview): The treeview widget displaying the data.
+        label_file (ttk.Label): Label showing the currently selected file path.
+        current_var_1..5 (tk.StringVar): StringVars linked to the comboboxes.
+    """
+
     def __init__(self, source=None):
         """
         Initialize the GUI and set up all widgets.
@@ -185,7 +214,7 @@ class dviewer():
 
     def Load_excel_data(self):
         """
-        Load the selected file into the jsd data manager.
+        Load the selected file into the jsdd data manager.
 
         If the file is valid (Excel or CSV), it sets the DataFrame in `self.db`
         and displays it. Shows an error message on failure.
@@ -226,7 +255,7 @@ class dviewer():
         Apply the current filter selections and update the treeview.
 
         Retrieves the values from the comboboxes, calls `generate_list` on the
-        jsd object to get a boolean mask, filters the DataFrame, and displays
+        jsdd object to get a boolean mask, filters the DataFrame, and displays
         the result. Shows an error if no file is loaded or if something goes wrong.
         """
         try:

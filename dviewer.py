@@ -108,7 +108,7 @@ class dviewer():
         self.label_file.place(rely=0, relx=0)
 
         # Buttons
-        button1 = tk.Button(file_frame, text="Browse Crop File", command=lambda: self.File_dialog())
+        button1 = tk.Button(file_frame, text="Browse Disease File", command=lambda: self.File_dialog())
         button1.place(width=150, rely=0.4, relx=0.05)
 
         button3 = tk.Button(file_frame, text="Save File", command=lambda: self.File_dialog_save_file())

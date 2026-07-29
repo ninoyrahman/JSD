@@ -50,7 +50,7 @@ class dviewer():
         self.rating = 'All'
 
         crop_names = ['All', 'Bitter Gourd', 'Bottle Gourd', 'Broccoli', 'Cabbage', 'Capsicum', 
-                    'Carrot', 'Cauliflower', 'Chinese Cabbage', 'Chinese Radish', 'Cucumber', 'Cucurbits'
+                    'Carrot', 'Cauliflower', 'Chinese Cabbage', 'Chinese Radish', 'Cucumber', 'Cucurbits',
                     'Eggplant', 'Hot Pepper', 'Kohlrabi', 'Lettuce', 'Loofah', 'Marigold', 
                     'Melon', 'Okra', 'Pakchoi', 'Papaya', 'Pumpkin', 'Radish', 'Red Cabbage', 
                     'Ridge Gourd', 'Snake Gourd', 'Sponge Gourd', 'Sweet Corn', 'Tomato', 
